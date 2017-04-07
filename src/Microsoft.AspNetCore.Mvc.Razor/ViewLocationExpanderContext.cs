@@ -18,12 +18,14 @@ namespace Microsoft.AspNetCore.Mvc.Razor
         /// <param name="viewName">The view name.</param>
         /// <param name="controllerName">The controller name.</param>
         /// <param name="areaName">The area name.</param>
+        /// <param name="pageName">The page name.</param>
         /// <param name="isMainPage">Determines if the page being found is the main page for an action.</param>
         public ViewLocationExpanderContext(
             ActionContext actionContext,
             string viewName,
             string controllerName,
             string areaName,
+            string pageName,
             bool isMainPage)
         {
             if (actionContext == null)
@@ -40,9 +42,10 @@ namespace Microsoft.AspNetCore.Mvc.Razor
             ViewName = viewName;
             ControllerName = controllerName;
             AreaName = areaName;
+            PageName = pageName;
             IsMainPage = isMainPage;
         }
-
+        
         /// <summary>
         /// Gets the <see cref="Mvc.ActionContext"/> for the current executing action.
         /// </summary>
@@ -57,6 +60,11 @@ namespace Microsoft.AspNetCore.Mvc.Razor
         /// Gets the controller name.
         /// </summary>
         public string ControllerName { get; }
+
+        /// <summary>
+        /// Gets the page name.
+        /// </summary>
+        public string PageName { get; }
 
         /// <summary>
         /// Gets the area name.

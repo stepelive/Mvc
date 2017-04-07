@@ -8,7 +8,6 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Text.Encodings.Web;
-using Microsoft.AspNetCore.Mvc.Internal;
 using Microsoft.AspNetCore.Mvc.Razor.Internal;
 using Microsoft.AspNetCore.Mvc.ViewEngines;
 using Microsoft.AspNetCore.Razor.Language;
@@ -33,8 +32,10 @@ namespace Microsoft.AspNetCore.Mvc.Razor
         public static readonly string ViewExtension = ".cshtml";
         private const string ViewStartFileName = "_ViewStart.cshtml";
 
-        private const string ControllerKey = "controller";
         private const string AreaKey = "area";
+        private const string ControllerKey = "controller";
+        private const string PageKey = "page";
+
         private const string ParentDirectoryToken = "..";
         private static readonly TimeSpan _cacheExpirationDuration = TimeSpan.FromMinutes(20);
         private static readonly char[] _pathSeparators = new[] { '/', '\\' };
@@ -272,11 +273,13 @@ namespace Microsoft.AspNetCore.Mvc.Razor
         {
             var controllerName = GetNormalizedRouteValue(actionContext, ControllerKey);
             var areaName = GetNormalizedRouteValue(actionContext, AreaKey);
+            var razorPageName = GetNormalizedRouteValue(actionContext, PageKey);
             var expanderContext = new ViewLocationExpanderContext(
                 actionContext,
                 pageName,
                 controllerName,
                 areaName,
+                razorPageName,
                 isMainPage);
             Dictionary<string, string> expanderValues = null;
 
@@ -296,6 +299,7 @@ namespace Microsoft.AspNetCore.Mvc.Razor
                 expanderContext.ViewName,
                 expanderContext.ControllerName,
                 expanderContext.AreaName,
+                expanderContext.PageName,
                 expanderContext.IsMainPage,
                 expanderValues);
 
@@ -400,10 +404,24 @@ namespace Microsoft.AspNetCore.Mvc.Razor
             ViewLocationExpanderContext expanderContext,
             ViewLocationCacheKey cacheKey)
         {
-            // Only use the area view location formats if we have an area token.
-            IEnumerable<string> viewLocations = !string.IsNullOrEmpty(expanderContext.AreaName) ?
-                _options.AreaViewLocationFormats :
-                _options.ViewLocationFormats;
+            IEnumerable<string> viewLocations;
+            if (!string.IsNullOrEmpty(expanderContext.AreaName) && 
+                !string.IsNullOrEmpty(expanderContext.ControllerName))
+            {
+                viewLocations = _options.AreaViewLocationFormats;
+            }
+            else if (!string.IsNullOrEmpty(expanderContext.ControllerName))
+            {
+                viewLocations = _options.ViewLocationFormats;
+            }
+            else if (!string.IsNullOrEmpty(expanderContext.PageName))
+            {
+                viewLocations = _options.PageViewLocationFormats;
+            }
+            else
+            {
+                throw null;
+            }
 
             for (var i = 0; i < _options.ViewLocationExpanders.Count; i++)
             {
