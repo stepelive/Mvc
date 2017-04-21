@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.Mvc.Internal;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Mvc.RazorPages.Infrastructure;
 using Microsoft.Extensions.Internal;
 
 namespace Microsoft.AspNetCore.Mvc.RazorPages.Internal
@@ -91,32 +92,35 @@ namespace Microsoft.AspNetCore.Mvc.RazorPages.Internal
             var properties = PropertyHelper.GetVisibleProperties(type: handlerType);
             var typeMetadata = modelMetadataProvider.GetMetadataForType(handlerType);
 
+            // If the type has a [BindPropertyAttribute] then we'll consider any and all public properties bindable.
+            var bindPropertyOnType = handlerSourceTypeInfo.GetCustomAttribute<BindPropertyAttribute>();
+
             var propertyBindingInfo = new List<PropertyBindingInfo>();
             for (var i = 0; i < properties.Length; i++)
             {
                 var property = properties[i];
                 var bindingInfo = BindingInfo.GetBindingInfo(property.Property.GetCustomAttributes());
 
-                if (bindingInfo == null)
+                if (bindingInfo == null && bindPropertyOnType == null)
                 {
                     continue;
                 }
 
-                var propertyMetadata = typeMetadata.Properties[property.Name] ??
-                        modelMetadataProvider.GetMetadataForProperty(handlerType, property.Name);
+                var propertyMetadata = typeMetadata.Properties[property.Name];
                 if (propertyMetadata == null)
                 {
                     continue;
                 }
 
-                var parameterDescriptor = new ParameterDescriptor
+                var descriptor = new PageBoundPropertyDescriptor()
                 {
-                    BindingInfo = bindingInfo,
+                    BindingInfo = bindingInfo ?? new BindingInfo(),
                     Name = property.Name,
+                    Property = property.Property,
                     ParameterType = property.Property.PropertyType,
                 };
 
-                propertyBindingInfo.Add(new PropertyBindingInfo(parameterDescriptor, propertyMetadata));
+                propertyBindingInfo.Add(new PropertyBindingInfo(descriptor, propertyMetadata));
             }
 
             return propertyBindingInfo;
@@ -138,14 +142,14 @@ namespace Microsoft.AspNetCore.Mvc.RazorPages.Internal
         private struct PropertyBindingInfo
         {
             public PropertyBindingInfo(
-                ParameterDescriptor parameterDescriptor,
+                PageBoundPropertyDescriptor parameterDescriptor,
                 ModelMetadata modelMetadata)
             {
                 ParameterDescriptor = parameterDescriptor;
                 ModelMetadata = modelMetadata;
             }
 
-            public ParameterDescriptor ParameterDescriptor { get; }
+            public PageBoundPropertyDescriptor ParameterDescriptor { get; }
 
             public ModelMetadata ModelMetadata { get; }
         }
