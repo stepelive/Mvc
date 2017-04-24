@@ -962,7 +962,20 @@ var expected =
             var response = await Client.GetStringAsync("/Pages/TagHelper/PathTraversalLinks");
 
             // Assert
-            Assert.Equal(expected, response.Trim());
+            Assert.EndsWith(expected, response.Trim());
+        }
+
+        [Fact]
+        public async Task TagHelpers_SupportsRelativeNavigation()
+        {
+            // Arrange
+            var expected = @"<form method=""post"" action=""/Pages/TagHelper/SubDirectoryLinks""></form>";
+
+            // Act
+            var response = await Client.GetStringAsync("/Pages/TagHelper/PathTraversalLinks");
+
+            // Assert
+            Assert.StartsWith(expected, response.Trim());
         }
 
         private async Task AddAntiforgeryHeaders(HttpRequestMessage request)
