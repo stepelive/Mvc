@@ -123,7 +123,7 @@ namespace Microsoft.AspNetCore.Mvc
                 value =>
                 {
                     Assert.Equal("page", value.Key);
-                    Assert.Equal("/A/Redirecting/", value.Value);
+                    Assert.Equal("/A/Redirecting", value.Value);
                 });
             Assert.Equal("ftp", context.Protocol);
             Assert.Equal("test-fragment", context.Fragment);
