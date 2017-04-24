@@ -921,8 +921,8 @@ Microsoft.AspNetCore.Mvc.ViewFeatures.ViewDataDictionary`1[AspNetCore._InjectedP
         public async Task TagHelpers_SupportSiblingRoutes()
         {
             // Arrange
-var expected = 
-@"<form method=""post"" action=""/Pages/TagHelper/CrossPost""></form>
+            var expected =
+            @"<form method=""post"" action=""/Pages/TagHelper/CrossPost""></form>
 <a href=""/Pages/TagHelper/SelfPost/12"" />
 <input type=""image"" formaction=""/Pages/TagHelper/CrossPost#my-fragment"" />";
 
@@ -937,8 +937,8 @@ var expected =
         public async Task TagHelpers_SupportSubDirectoryRoutes()
         {
             // Arrange
-var expected = 
-@"<form method=""post"" action=""/Pages/TagHelper/SubDir/SubDirPage""></form>
+            var expected =
+            @"<form method=""post"" action=""/Pages/TagHelper/SubDir/SubDirPage""></form>
 <a href=""/Pages/TagHelper/SubDir/SubDirPage/12"" />
 <input type=""image"" formaction=""/Pages/TagHelper/SubDir/SubDirPage#my-fragment"" />";
 
@@ -953,8 +953,8 @@ var expected =
         public async Task TagHelpers_SupportsPathNavigation()
         {
             // Arrange
-var expected = 
-@"<form method=""post"" action=""/HelloWorld""></form>
+            var expected =
+            @"<form method=""post"" action=""/HelloWorld""></form>
 <a href=""/Pages/Redirects/RedirectToIndex"" />
 <input type=""image"" formaction=""/Pages/Admin#my-fragment"" />";
 
