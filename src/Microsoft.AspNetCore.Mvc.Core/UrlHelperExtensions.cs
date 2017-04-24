@@ -457,6 +457,11 @@ namespace Microsoft.AspNetCore.Mvc
                     throw new InvalidOperationException(Resources.FormatUrlHelper_RelativePagePathIsNotSupported(pageName));
                 }
 
+                if(pageName.StartsWith("./"))
+                {
+                    pageName = pageName.Substring(2, pageName.Length - 2);
+                }
+
                 return ViewEnginePath.CombinePath(currentPagePath, pageName);
             }
 

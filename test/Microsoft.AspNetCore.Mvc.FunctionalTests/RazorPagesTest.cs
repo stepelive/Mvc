@@ -892,6 +892,20 @@ Microsoft.AspNetCore.Mvc.ViewFeatures.ViewDataDictionary`1[AspNetCore._InjectedP
         }
 
         [Fact]
+        public async Task RedirectToSibling_RedirectsToDotSlash()
+        {
+            // Arrange
+            var expected = "/Pages/Redirects/SubDir/SubDirPage";
+
+            // Act
+            var response = await Client.GetAsync("/Pages/Redirects/RedirectToSibling/RedirectToDotSlash");
+
+            // Assert
+            Assert.Equal(HttpStatusCode.Redirect, response.StatusCode);
+            Assert.Equal(expected, response.Headers.Location.ToString());
+        }
+
+        [Fact]
         public async Task RedirectToSibling_RedirectsToParentDirectory()
         {
             // Arrange
